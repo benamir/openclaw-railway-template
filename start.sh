@@ -19,4 +19,23 @@ if (d && d.model && d.model.primary && d.model.primary.startsWith('google/')) {
 "
 fi
 
+# ── Sync workspace scripts from GitHub ───────────────────────────────────────
+# Pull latest scripts from ben-flowdesk/alphaclaw-agent on every boot.
+# Requires GITHUB_TOKEN env var set in Railway with repo read access.
+SCRIPTS_DIR="/data/.openclaw/workspace/scripts"
+SCRIPTS_REPO="https://raw.githubusercontent.com/ben-flowdesk/alphaclaw-agent/main/scripts"
+
+if [ -n "$GITHUB_TOKEN" ]; then
+  mkdir -p "$SCRIPTS_DIR"
+  for script in youtube-to-brain.mjs x-to-brain.mjs; do
+    curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
+      "$SCRIPTS_REPO/$script" -o "$SCRIPTS_DIR/$script" 2>/dev/null \
+      && echo "[start] Updated $script" \
+      || echo "[start] Could not fetch $script (skipping)"
+  done
+else
+  echo "[start] GITHUB_TOKEN not set — skipping script sync"
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 exec alphaclaw start
