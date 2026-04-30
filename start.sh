@@ -27,12 +27,20 @@ SCRIPTS_REPO="https://raw.githubusercontent.com/ben-flowdesk/alphaclaw-agent/mai
 
 if [ -n "$GITHUB_TOKEN" ]; then
   mkdir -p "$SCRIPTS_DIR"
-  for script in youtube-to-brain.mjs x-to-brain.mjs; do
+  for script in youtube-to-brain.mjs x-to-brain.mjs package.json; do
     curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
       "$SCRIPTS_REPO/$script" -o "$SCRIPTS_DIR/$script" 2>/dev/null \
       && echo "[start] Updated $script" \
       || echo "[start] Could not fetch $script (skipping)"
   done
+  # Install script dependencies
+  if [ -f "$SCRIPTS_DIR/package.json" ]; then
+    cd "$SCRIPTS_DIR" && /data/.bun/bin/bun install --frozen-lockfile 2>/dev/null \
+      || /data/.bun/bin/bun install 2>/dev/null \
+      && echo "[start] Script deps installed" \
+      || echo "[start] Script deps install failed"
+    cd /
+  fi
 else
   echo "[start] GITHUB_TOKEN not set — skipping script sync"
 fi
