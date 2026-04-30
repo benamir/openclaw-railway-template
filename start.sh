@@ -38,4 +38,28 @@ else
 fi
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ── Wire brain repo remote ────────────────────────────────────────────────────
+# Set up ben-flowdesk/alphaclaw-brain as the remote for the brain git repo.
+# Uses GITHUB_TOKEN (ben-flowdesk PAT) already set in Railway env.
+BRAIN_DIR="/data/.openclaw/brain"
+BRAIN_REMOTE="https://${GITHUB_TOKEN}@github.com/ben-flowdesk/alphaclaw-brain.git"
+
+if [ -n "$GITHUB_TOKEN" ] && [ -d "$BRAIN_DIR/.git" ]; then
+  cd "$BRAIN_DIR"
+  if ! git remote get-url origin &>/dev/null; then
+    git remote add origin "$BRAIN_REMOTE"
+    echo "[start] Brain remote added: ben-flowdesk/alphaclaw-brain"
+  else
+    git remote set-url origin "$BRAIN_REMOTE"
+  fi
+  git config user.email "alphaclaw@flowdesk.ai"
+  git config user.name "AlphaClaw"
+  # Push current brain on first boot (force to init empty remote)
+  git push -u origin main --force 2>&1 | tail -3 \
+    && echo "[start] Brain pushed to GitHub" \
+    || echo "[start] Brain push failed (will retry on next sync)"
+  cd /
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 exec alphaclaw start
