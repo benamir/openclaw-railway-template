@@ -33,9 +33,12 @@ if [ -n "$GITHUB_TOKEN" ] && [ -d "$WORKSPACE_DIR/.git" ]; then
   git config user.email "alphaclaw@flowdesk.ai"
   git config user.name "AlphaClaw"
   git remote set-url origin "https://${GITHUB_TOKEN}@github.com/ben-flowdesk/alphaclaw-agent.git"
+  # Preserve cron state — stash jobs.json before pull, restore after
+  git stash -- cron/jobs.json 2>/dev/null || true
   git pull --rebase origin main 2>&1 | tail -3 \
     && echo "[start] Workspace synced from GitHub" \
     || echo "[start] Workspace sync failed (continuing with local)"
+  git stash pop 2>/dev/null || true
   cd /
 fi
 # ─────────────────────────────────────────────────────────────────────────────
