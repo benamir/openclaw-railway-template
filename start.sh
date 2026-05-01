@@ -12,13 +12,13 @@ if (d) {
   const current = d.model && d.model.primary;
   const needsSwitch = current && current.startsWith('google/');
   // Always normalize model config — remove unsupported fields like 'fallback'
-  d.models = { 'openai/gpt-4.1': {}, 'openai/gpt-4o-mini': {} };
-  d.model = { primary: 'openai/gpt-4.1' };
+  d.models = { 'openai/gpt-4.1-mini': {}, 'openai/gpt-4o-mini': {} };
+  d.model = { primary: 'openai/gpt-4.1-mini' };
   fs.writeFileSync('$CONFIG', JSON.stringify(config, null, 2));
   if (needsSwitch) {
-    console.log('[start] Switched model from ' + current + ' to openai/gpt-4.1');
+    console.log('[start] Switched model from ' + current + ' to openai/gpt-4.1-mini');
   } else {
-    console.log('[start] Model config normalized: openai/gpt-4.1');
+    console.log('[start] Model config normalized: openai/gpt-4.1-mini');
   }
 }
 "
