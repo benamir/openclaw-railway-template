@@ -46,6 +46,14 @@ else
 fi
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ── Install bird CLI (@steipete/bird) ────────────────────────────────────────
+if [ ! -f "/root/.bun/bin/bird" ]; then
+  /data/.bun/bin/bun install -g @steipete/bird 2>/dev/null \
+    && echo "[start] bird installed" \
+    || echo "[start] bird install failed"
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ── Wire brain repo remote ────────────────────────────────────────────────────
 # Set up ben-flowdesk/alphaclaw-brain as the remote for the brain git repo.
 # Uses GITHUB_TOKEN (ben-flowdesk PAT) already set in Railway env.
