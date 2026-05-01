@@ -24,9 +24,24 @@ if (d) {
 "
 fi
 
+# ── Sync full workspace from GitHub ──────────────────────────────────────────
+# Pull latest workspace (bootstrap hooks, skills, etc) from ben-flowdesk/alphaclaw-agent.
+WORKSPACE_DIR="/data/.openclaw/workspace"
+
+if [ -n "$GITHUB_TOKEN" ] && [ -d "$WORKSPACE_DIR/.git" ]; then
+  cd "$WORKSPACE_DIR"
+  git config user.email "alphaclaw@flowdesk.ai"
+  git config user.name "AlphaClaw"
+  git remote set-url origin "https://${GITHUB_TOKEN}@github.com/ben-flowdesk/alphaclaw-agent.git"
+  git pull --rebase origin main 2>&1 | tail -3 \
+    && echo "[start] Workspace synced from GitHub" \
+    || echo "[start] Workspace sync failed (continuing with local)"
+  cd /
+fi
+# ─────────────────────────────────────────────────────────────────────────────
+
 # ── Sync workspace scripts from GitHub ───────────────────────────────────────
-# Pull latest scripts from ben-flowdesk/alphaclaw-agent on every boot.
-# Requires GITHUB_TOKEN env var set in Railway with repo read access.
+# Keep individual script files up to date from raw GitHub URLs.
 SCRIPTS_DIR="/data/.openclaw/workspace/scripts"
 SCRIPTS_REPO="https://raw.githubusercontent.com/ben-flowdesk/alphaclaw-agent/main/scripts"
 
